@@ -74,10 +74,12 @@ class OpenRouterLLM:
     """Adapter for OpenRouter API to work with PandasAI."""
     
     MODELS = {
-        "Gemini 2.0 Flash (Fast & Free)": "google/gemini-2.0-flash-exp:free",
-        "Llama 3.3 70B (Meta SOTA)": "meta-llama/llama-3.3-70b-instruct:free",
-        "Devstral 2 (Quick Analysis)": "mistralai/devstral-2-2512:free",
-        "DeepSeek R1T2 Chimera (Reasoning)": "tng/deepseek-r1t2-chimera:free"
+
+        "DeepSeek R1 0528 (Reasoning)": "deepseek/deepseek-r1-0528:free",
+        "⚙️ MiMo-V2-Flash (Lightweight)": "xiaomi/mimo-v2-flash:free",
+        "📊 Trinity Mini (Fast Analysis)": "arcee-ai/trinity-mini:free",
+        "🦾 Llama 3.3 70B (Balanced Power)": "meta-llama/llama-3.3-70b-instruct:free",
+        "🧩 Nemotron 3 Nano (Ultra-Fast)": "nvidia/nemotron-3-nano-30b-a3b:free",
     }
 
     @staticmethod
