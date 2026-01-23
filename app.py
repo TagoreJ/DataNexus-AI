@@ -74,10 +74,10 @@ class OpenRouterLLM:
     """Adapter for OpenRouter API to work with PandasAI."""
     
     MODELS = {
-        "Qwen 3 Next 80B (Fast & Free)": "qwen/qwen3-next-80b-a3b-instruct:free",
-        "Hermes 3 Llama 3.1 405B (Meta SOTA)": "nousresearch/hermes-3-llama-3.1-405b:free",
-        "Mistral Small 3.1 24B (Quick Analysis)": "mistralai/mistral-small-3.1-24b-instruct:free",
-        "Nemotron Nano 9B (NVIDIA)": "nvidia/nemotron-nano-9b-v2:free"
+        "Gemini 2.0 Flash (Fast & Free)": "google/gemini-2.0-flash-exp:free",
+        "Llama 3.3 70B (Meta SOTA)": "meta-llama/llama-3.3-70b-instruct:free",
+        "Devstral 2 (Quick Analysis)": "mistralai/devstral-2-2512:free",
+        "DeepSeek R1T2 Chimera (Reasoning)": "tng/deepseek-r1t2-chimera:free"
     }
 
     @staticmethod
