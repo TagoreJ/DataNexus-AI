@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from pandasai import SmartDataframe
+from pandasai import Agent
 from pandasai.llm import OpenAI
 from pandasai.responses.response_parser import ResponseParser
 import matplotlib.pyplot as plt
@@ -132,6 +132,25 @@ def download_history():
         history += f"**{role}:** {msg['content']}\n\n"
     return history
 
+def get_smart_df(df, api_key, model_name, enforce_privacy=True, enable_cache=True):
+    """Factory for SmartDataframe with correct LLM setup."""
+    if not api_key:
+        return None
+    
+    llm = OpenRouterLLM.get_llm(api_key, model_name)
+    agent = Agent(
+        df,
+        config={
+            "llm": llm,
+            "save_charts": True,
+            "save_charts_path": "./charts",
+            "enforce_privacy": enforce_privacy,
+            "enable_cache": enable_cache,
+            "verbose": True
+        }
+    )
+    return agent
+
 # --- 4. STREAMLIT UI ---
 
 def main():
@@ -193,6 +212,41 @@ def main():
                     else:
                         st.info("No numeric columns to plot.")
 
+                # AI Executive Summary
+                st.markdown("---")
+                st.subheader("🤖 AI Executive Dashboard")
+                
+                if api_key:
+                    if st.button("Generate AI Insights", type="primary"):
+                        agent = get_smart_df(df, api_key, selected_model, enforce_privacy, enable_cache)
+                        
+                        col_ai_1, col_ai_2 = st.columns([1, 1])
+                        
+                        with col_ai_1:
+                            st.markdown("### 📋 Executive Summary")
+                            with st.spinner("Analyzing data patterns..."):
+                                try:
+                                    summary = agent.chat("Analyze this dataset and provide a 3-bullet executive summary of key trends, anomalies, or important metrics. Be concise.")
+                                    st.markdown(summary)
+                                except Exception as e:
+                                    st.error(f"Could not generate summary: {e}")
+                        
+                        with col_ai_2:
+                            st.markdown("### 📊 Key Visualization")
+                            with st.spinner("Creating chart..."):
+                                try:
+                                    # Requesting a plot specifically
+                                    chart_response = agent.chat("Generate the most insightful chart for this data (e.g., trends over time or category distribution). Return the plot image path.")
+                                    
+                                    if isinstance(chart_response, str) and (chart_response.endswith('.png') or chart_response.endswith('.jpg')):
+                                        st.image(chart_response)
+                                    else:
+                                        st.info("AI suggested: " + str(chart_response))
+                                except Exception as e:
+                                    st.error(f"Could not generate chart: {e}")
+                else:
+                    st.warning("Enter your OpenRouter API Key in the sidebar to unlock AI Insights.")
+
             # --- VIEW: DATA AUDIT ---
             elif app_mode == "Data Audit":
                 st.header("🛡️ Data Health Audit")
@@ -227,22 +281,9 @@ def main():
                     st.warning("Please enter your OpenRouter API Key in the sidebar.")
                     st.stop()
                 
-                # Initialize LLM
-                llm = OpenRouterLLM.get_llm(api_key, selected_model)
+                # Initialize LLM & Agent
+                agent = get_smart_df(df, api_key, selected_model, enforce_privacy, enable_cache)
                 
-                # SmartDataframe Init
-                sdf = SmartDataframe(
-                    df,
-                    config={
-                        "llm": llm,
-                        "save_charts": True,
-                        "save_charts_path": "./charts",
-                        "enforce_privacy": enforce_privacy,
-                        "enable_cache": enable_cache,
-                        "verbose": True
-                    }
-                )
-
                 # Chat UI
                 if "messages" not in st.session_state:
                     st.session_state.messages = []
@@ -266,7 +307,7 @@ def main():
                     with st.chat_message("assistant"):
                         with st.spinner("Analyzing..."):
                             try:
-                                response = sdf.chat(prompt)
+                                response = agent.chat(prompt)
                                 
                                 # Image Response
                                 if isinstance(response, str) and (response.endswith('.png') or response.endswith('.jpg')):
@@ -277,11 +318,23 @@ def main():
                                 elif isinstance(response, pd.DataFrame):
                                     st.dataframe(response)
                                     st.session_state.messages.append({"role": "assistant", "content": response.to_markdown(), "type": "text"})
+                                    # Download CSV Option
+                                    st.download_button(
+                                        label="Download Result as CSV",
+                                        data=response.to_csv(index=False).encode('utf-8'),
+                                        file_name='kratos_ai_result.csv',
+                                        mime='text/csv',
+                                    )
                                 
                                 # Text Response
                                 else:
                                     st.write(response)
                                     st.session_state.messages.append({"role": "assistant", "content": str(response), "type": "text"})
+                                
+                                # Show Generated Code
+                                if agent.last_code_generated:
+                                    with st.expander("📝 View Generated Source Code"):
+                                        st.code(agent.last_code_generated, language='python')
                             
                             except Exception as e:
                                 st.error(f"Analysis Error: {e}")
