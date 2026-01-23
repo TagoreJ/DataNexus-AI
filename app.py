@@ -87,12 +87,16 @@ class OpenRouterLLM:
     def get_llm(api_key: str, model_name: str):
         if not api_key:
             return None
-        return OpenAI(
+        # Initialize with a supported model to bypass validation
+        llm = OpenAI(
             api_token=api_key,
             api_base="https://openrouter.ai/api/v1",
-            model=OpenRouterLLM.MODELS[model_name],
+            model="gpt-3.5-turbo",
             temperature=0.1
         )
+        # Override with the actual OpenRouter model
+        llm.model = OpenRouterLLM.MODELS[model_name]
+        return llm
 
 # --- 3. UTILITY FUNCTIONS ---
 
