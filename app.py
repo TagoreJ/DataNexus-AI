@@ -224,26 +224,33 @@ def main():
                         
                         with col_ai_1:
                             st.markdown("### 📋 Executive Summary")
-                            with st.spinner("Analyzing data patterns..."):
+                            with st.status("Drafting Executive Summary...", expanded=True) as status:
                                 try:
+                                    st.write("🔍 Analyzing data patterns...")
                                     summary = agent.chat("Analyze this dataset and provide a 3-bullet executive summary of key trends, anomalies, or important metrics. Be concise.")
                                     st.markdown(summary)
+                                    status.update(label="Executive Summary Ready", state="complete", expanded=True)
                                 except Exception as e:
                                     st.error(f"Could not generate summary: {e}")
+                                    status.update(label="Error", state="error")
                         
                         with col_ai_2:
                             st.markdown("### 📊 Key Visualization")
-                            with st.spinner("Creating chart..."):
+                            with st.status("Creating Chart...", expanded=True) as status:
                                 try:
+                                    st.write("🎨 Visualizing trends...")
                                     # Requesting a plot specifically
                                     chart_response = agent.chat("Generate the most insightful chart for this data (e.g., trends over time or category distribution). Return the plot image path.")
                                     
                                     if isinstance(chart_response, str) and (chart_response.endswith('.png') or chart_response.endswith('.jpg')):
                                         st.image(chart_response)
+                                        status.update(label="Chart Generated", state="complete", expanded=True)
                                     else:
                                         st.info("AI suggested: " + str(chart_response))
+                                        status.update(label="Insight Generated", state="complete", expanded=True)
                                 except Exception as e:
                                     st.error(f"Could not generate chart: {e}")
+                                    status.update(label="Error", state="error")
                 else:
                     st.warning("Enter your OpenRouter API Key in the sidebar to unlock AI Insights.")
 
@@ -305,39 +312,44 @@ def main():
 
                     # Generate AI Response
                     with st.chat_message("assistant"):
-                        with st.spinner("Analyzing..."):
+                        response = None
+                        with st.status("🧠 Neural Engine processing...", expanded=True) as status:
+                            st.write("⏳ Analyzing query...")
                             try:
                                 response = agent.chat(prompt)
-                                
-                                # Image Response
-                                if isinstance(response, str) and (response.endswith('.png') or response.endswith('.jpg')):
-                                    st.image(response)
-                                    st.session_state.messages.append({"role": "assistant", "content": response, "type": "image"})
-                                
-                                # DataFrame Response
-                                elif isinstance(response, pd.DataFrame):
-                                    st.dataframe(response)
-                                    st.session_state.messages.append({"role": "assistant", "content": response.to_markdown(), "type": "text"})
-                                    # Download CSV Option
-                                    st.download_button(
-                                        label="Download Result as CSV",
-                                        data=response.to_csv(index=False).encode('utf-8'),
-                                        file_name='kratos_ai_result.csv',
-                                        mime='text/csv',
-                                    )
-                                
-                                # Text Response
-                                else:
-                                    st.write(response)
-                                    st.session_state.messages.append({"role": "assistant", "content": str(response), "type": "text"})
-                                
-                                # Show Generated Code
-                                if agent.last_code_generated:
-                                    with st.expander("📝 View Generated Source Code"):
-                                        st.code(agent.last_code_generated, language='python')
+                                status.update(label="Processing Complete", state="complete", expanded=False)
                             
                             except Exception as e:
                                 st.error(f"Analysis Error: {e}")
+                                status.update(label="Error", state="error")
+                        
+                        if response is not None:
+                            # Image Response
+                            if isinstance(response, str) and (response.endswith('.png') or response.endswith('.jpg')):
+                                st.image(response)
+                                st.session_state.messages.append({"role": "assistant", "content": response, "type": "image"})
+                            
+                            # DataFrame Response
+                            elif isinstance(response, pd.DataFrame):
+                                st.dataframe(response)
+                                st.session_state.messages.append({"role": "assistant", "content": response.to_markdown(), "type": "text"})
+                                # Download CSV Option
+                                st.download_button(
+                                    label="Download Result as CSV",
+                                    data=response.to_csv(index=False).encode('utf-8'),
+                                    file_name='kratos_ai_result.csv',
+                                    mime='text/csv',
+                                )
+                            
+                            # Text Response
+                            else:
+                                st.write(response)
+                                st.session_state.messages.append({"role": "assistant", "content": str(response), "type": "text"})
+                            
+                            # Show Generated Code
+                            if agent.last_code_generated:
+                                with st.expander("📝 View Generated Source Code"):
+                                    st.code(agent.last_code_generated, language='python')
 
                 # History Export
                 if st.session_state.messages:
