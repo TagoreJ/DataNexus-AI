@@ -191,7 +191,7 @@ st.markdown(CUSTOM_HTML_CSS, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="header-gradient">
-    <h1>🧬 DataNexus AI Ultimate</h1>
+    <h1>🧬 DataNexus AI</h1>
     <p style="font-size: 16px; margin: 10px 0;">Enterprise-Grade Analytics • Neural Agent • ML & Statistics • Reports</p>
     <p style="font-size: 12px; opacity: 0.8;">Powered by Advanced Statistics & Large Language Model Reasoning</p>
 </div>
