@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import networkx as nx
 from pandasai import Agent
-from pandasai.llm import OpenAI
+from pandasai_openai import OpenAI
 from datetime import datetime
 import io
 import json
