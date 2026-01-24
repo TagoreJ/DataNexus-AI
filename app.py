@@ -176,7 +176,7 @@ CUSTOM_HTML_CSS = """
 # ================================================
 
 st.set_page_config(
-    page_title="DataNexus AI | Ultimate Edition",
+    page_title="DataNexus AI",
     page_icon="🧬",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -204,11 +204,12 @@ class OpenRouterLLM:
     """Adapter for OpenRouter API to work with PandasAI."""
     
     MODELS = {
-        "🧠 DeepSeek R1 0528 (Reasoning)": "deepseek/deepseek-r1-0528:free",
+        
         "⚙️ MiMo-V2-Flash (Lightweight)": "xiaomi/mimo-v2-flash:free",
         "📊 Trinity Mini (Fast Analysis)": "arcee-ai/trinity-mini:free",
         "🦾 Llama 3.3 70B (Balanced Power)": "meta-llama/llama-3.3-70b-instruct:free",
         "🧩 Nemotron 3 Nano (Ultra-Fast)": "nvidia/nemotron-3-nano-30b-a3b:free",
+        "🧠 DeepSeek R1 0528 (Reasoning)": "deepseek/deepseek-r1-0528:free",
     }
 
     @staticmethod
