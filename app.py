@@ -773,9 +773,9 @@ with tab3:
                         st.session_state.messages.append({"role": "assistant", "content": str(response), "type": "text"})
                     
                     # Show Code
-                    if agent.last_code_generated:
+                    if agent.last_generated_code:
                         with st.expander("📝 Show Generated Python Code"):
-                            st.code(agent.last_code_generated, language='python')
+                            st.code(agent.last_generated_code, language='python')
 
 
 # ================================================
