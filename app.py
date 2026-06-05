@@ -210,6 +210,7 @@ class OpenRouterLLM:
         "🦾 Llama 3.3 70B (Balanced Power)": "meta-llama/llama-3.3-70b-instruct:free",
         "🧩 Nemotron 3 Nano (Ultra-Fast)": "nvidia/nemotron-3-nano-30b-a3b:free",
         "🧠 DeepSeek R1 0528 (Reasoning)": "deepseek/deepseek-r1-0528:free",
+        "Openrouter free": "openrouter/free",
     }
 
     @staticmethod
